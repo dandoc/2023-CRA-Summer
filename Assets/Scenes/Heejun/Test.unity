@@ -268,7 +268,7 @@ MonoBehaviour:
   moveSpeed: 2
   maxSpeed: 8
   jumpPower: 22
-  maxJump: 0
+  maxJumpCount: 2
   gravityForce: 20
   isMove: 0
   isAttack: 0
