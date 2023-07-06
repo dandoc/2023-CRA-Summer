@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+*/
+
+
 public class PlayerBehavior : MonoBehaviour
 {
     //컨포넌트
@@ -12,13 +16,17 @@ public class PlayerBehavior : MonoBehaviour
 
     // 물리 변수
     public float moveSpeed;
+    public float maxSpeed;
     public float jumpPower;
+    public int maxJump;
     public float gravityForce;
     
+
     // 애니메이션 관련 변수
     public bool isMove;
     public bool isAttack;
     public bool isJump;
+    public bool isAir;
 
     // Start is called before the first frame update
     void Start()
@@ -54,6 +62,15 @@ public class PlayerBehavior : MonoBehaviour
         {
             isMove = false;
         }
+        // 최대 속도를 넘어서면 최대 속도로 고정시김
+        if (rigid.velocity.x > maxSpeed)
+        {
+            rigid.velocity = new Vector2(maxSpeed, rigid.velocity.y);
+        }
+        else if (rigid.velocity.x < -maxSpeed)
+        {
+            rigid.velocity = new Vector2(-maxSpeed, rigid.velocity.y);
+        }
 
         if((Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.UpArrow)) && !isJump)
         {
@@ -66,14 +83,49 @@ public class PlayerBehavior : MonoBehaviour
         //anim.SetBool("isJump", isJump);
         anim.SetBool("isAttack", isAttack);
 
-        rigid.AddForce(Vector3.down * gravityForce);
+        // rigid.AddForce(Vector3.down * gravityForce);
+
+        CheckisJump();
     }
 
-    
-    private void OnCollisionEnter2D(Collision2D other) {
-        if(other.gameObject.tag == "Floor")
+    public void CheckisJump()
+    // 레이케스트를 사용하여 점프 유무와 공중에 떠있는지 여부를 파악함
+    {
+        // Debug.DrawRay(trans.position, Vector3.down * 0.7f, new Color(0, 1, 0));
+        Debug.DrawRay(trans.position - new Vector3(0.225f, 0, 0), Vector3.down * 0.7f, new Color(0, 1, 0));
+        Debug.DrawRay(trans.position + new Vector3(0.225f, 0, 0), Vector3.down * 0.7f, new Color(0, 1, 0));
+
+        if (rigid.velocity.y < 0)
         {
-            isJump = false;
+            isAir = true;
+
+            RaycastHit2D[] rayHit = new RaycastHit2D[2];
+            rayHit[0] = Physics2D.Raycast(trans.position - new Vector3(0.225f, 0, 0), Vector3.down * 0.7f, LayerMask.GetMask("Platform"));
+            rayHit[1] = Physics2D.Raycast(trans.position + new Vector3(0.225f, 0, 0), Vector3.down * 0.7f, LayerMask.GetMask("Platform"));
+
+
+            if((rayHit[0].collider != null && rayHit[0].distance < 0.35f) || (rayHit[1].collider != null && rayHit[1].distance < 0.35f))
+            {
+                isJump = false;
+                isAir = false;
+            }
+        }
+        else if(rigid.velocity.y > 0)
+        {
+            isAir = true;
+        }
+
+        if(isAir)
+        {
+            RaycastHit2D[] rayHit = new RaycastHit2D[2];
+            rayHit[0] = Physics2D.Raycast(trans.position - new Vector3(0.225f, 0, 0), Vector3.down * 0.7f, LayerMask.GetMask("Platform"));
+            rayHit[1] = Physics2D.Raycast(trans.position + new Vector3(0.225f, 0, 0), Vector3.down * 0.7f, LayerMask.GetMask("Platform"));
+
+
+            if((rayHit[0].collider != null && rayHit[0].distance < 0.35f) || (rayHit[1].collider != null && rayHit[1].distance < 0.35f))
+            {
+                isAir = false;
+            }
         }
     }
 
