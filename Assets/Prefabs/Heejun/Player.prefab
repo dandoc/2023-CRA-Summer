@@ -142,9 +142,9 @@ MonoBehaviour:
   anim: {fileID: 0}
   rend: {fileID: 0}
   trans: {fileID: 0}
-  moveSpeed: 2
-  maxSpeed: 8
-  jumpPower: 22
+  moveSpeed: 1.5
+  maxSpeed: 6
+  jumpPower: 24
   maxJumpCount: 2
   gravityForce: 20
   isMove: 0
