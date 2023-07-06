@@ -42,8 +42,9 @@ public class PlayerBehavior : MonoBehaviour
     void FixedUpdate()
     {
         float inputX;
+        float inputY;
         inputX = Input.GetAxisRaw("Horizontal");
-        
+        inputY = Input.GetAxisRaw("Vertical");
 
         if(inputX != 0)
         {
@@ -72,7 +73,7 @@ public class PlayerBehavior : MonoBehaviour
             rigid.velocity = new Vector2(-maxSpeed, rigid.velocity.y);
         }
 
-        if((Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.UpArrow)) && !isJump)
+        if((Input.GetKeyDown(KeyCode.Z) || inputY == 1) && !isJump)
         {
             isJump = true;
             rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
