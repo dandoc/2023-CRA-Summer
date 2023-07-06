@@ -18,7 +18,7 @@ public class PlayerBehavior : MonoBehaviour
     public float moveSpeed;
     public float maxSpeed;
     public float jumpPower;
-    public int maxJump;
+    public int maxJumpCount;
     public float gravityForce;
     
 
@@ -98,7 +98,6 @@ public class PlayerBehavior : MonoBehaviour
 
         Vector3 rayPos = new Vector3(0.21f, 0, 0);
 
-        // Debug.DrawRay(trans.position, Vector3.down * 0.7f, new Color(0, 1, 0));
         Debug.DrawRay(trans.position - rayPos, Vector3.down * 0.7f, new Color(0, 1, 0));
         Debug.DrawRay(trans.position + rayPos, Vector3.down * 0.7f, new Color(0, 1, 0));
 
