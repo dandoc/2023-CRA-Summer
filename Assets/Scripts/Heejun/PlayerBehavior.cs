@@ -35,6 +35,7 @@ public class PlayerBehavior : MonoBehaviour
         anim = GetComponent<Animator>();
         rend = GetComponent<SpriteRenderer>();
         trans = GetComponent<Transform>();
+        
         numJumpCount = 0;
     }
 
@@ -75,18 +76,21 @@ public class PlayerBehavior : MonoBehaviour
 
         if((Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.UpArrow)) && (!isJump || isAir) /*&& (numJumpCount < maxJumpCount)*/)
         {
+            Debug.Log("up!: " + Time.frameCount);
             if(!isJump && !isAir && numJumpCount == 0)
             {
                 isJump = true;
                 numJumpCount = 1;
-                rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+                StartCoroutine(Jump());
+                // rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
             }
                 
             else if (((!isJump && isAir) || (isJump && isAir)) && (numJumpCount < maxJumpCount))
             {
                 isJump = true;
                 numJumpCount = 2;
-                rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+                StartCoroutine(Jump());
+                // rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
             }
         }
         anim.SetBool("isMove", isMove);
@@ -129,25 +133,13 @@ public class PlayerBehavior : MonoBehaviour
 
         }
 
-        // if(isAir)
-        // {
-        //     RaycastHit2D[] rayHit = new RaycastHit2D[2];
-        //     rayHit[0] = Physics2D.Raycast(trans.position - new Vector3(rayPosX, rayPosY, 0), Vector3.down, 0.7f - rayPosY, LayerMask.GetMask("Platform"));
-        //     rayHit[1] = Physics2D.Raycast(trans.position + new Vector3(rayPosX, -rayPosY, 0), Vector3.down, 0.7f - rayPosY, LayerMask.GetMask("Platform"));
-
-        //     if((rayHit[0].collider != null && rayHit[0].distance < 0.35f - rayPosY) || (rayHit[1].collider != null && rayHit[1].distance < 0.35f - rayPosY))
-        //     {
-        //         isAir = false;
-        //     }
-
-        // }
     }
 
-    IEnumerator JumpCounter()
+    IEnumerator Jump()
     {
-        // if(is)
-        
-        yield return null;
+        yield return new WaitForFixedUpdate();
+
+        rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
     }
 
 }
