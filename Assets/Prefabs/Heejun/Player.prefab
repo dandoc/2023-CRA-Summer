@@ -144,9 +144,9 @@ MonoBehaviour:
   trans: {fileID: 0}
   moveSpeed: 1.5
   maxSpeed: 6
-  jumpPower: 24
+  jumpPower: 21
   maxJumpCount: 2
-  gravityForce: 20
+  numJumpCount: 0
   isMove: 0
   isAttack: 0
   isJump: 0

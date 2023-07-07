@@ -42,6 +42,58 @@ public class PlayerBehavior : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        Move();
+        Jump();
+        AnimUpdate();
+        CheckisJump();
+        // rigid.AddForce(Vector3.down * gravityForce); // 삭제 ㄱ?
+    }
+
+    public void CheckisJump() // 레이케스트를 사용하여 점프 유무와 공중에 떠있는지 여부를 파악함
+    {
+        if(rigid.velocity.y != 0) // 그냥 떨어졌을 때의 경우도 포함하기 위한 조건문
+        {
+            isAir = true;
+        }
+
+        float rayPosX = 0.21f;
+        float rayPosY = 0.25f;
+
+        Debug.DrawRay(trans.position - new Vector3(rayPosX, rayPosY, 0), Vector3.down * (0.7f - rayPosY), new Color(0, 1, 0));
+        Debug.DrawRay(trans.position + new Vector3(rayPosX, -rayPosY, 0), Vector3.down * (0.7f - rayPosY), new Color(0, 1, 0));
+
+        if (rigid.velocity.y < 0)
+        {
+
+            RaycastHit2D[] rayHit = new RaycastHit2D[2];
+            rayHit[0] = Physics2D.Raycast(trans.position - new Vector3(rayPosX, rayPosY, 0), Vector2.down, 0.7f - rayPosY, LayerMask.GetMask("Platform"));
+            rayHit[1] = Physics2D.Raycast(trans.position + new Vector3(rayPosX, -rayPosY, 0), Vector2.down, 0.7f - rayPosY, LayerMask.GetMask("Platform"));
+
+            if((rayHit[0].collider != null && rayHit[0].distance < 0.35f - rayPosY) || (rayHit[1].collider != null && rayHit[1].distance < 0.35f - rayPosY))
+            {
+                isJump = false;
+                isAir = false;
+                numJumpCount = 0;
+            }
+
+        }
+
+    }
+
+    IEnumerator AttackCoroutine()
+    {
+        yield return new WaitForFixedUpdate();
+    }
+
+    IEnumerator JumpCoroutine() // 한 프레임에 입력이 동시에 두번이 들어가서 코루팅을 이용함.
+    {
+        yield return new WaitForFixedUpdate();
+
+        rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+    }
+
+    public void Move()
+    {
         float inputX;
         float inputY;
         inputX = Input.GetAxisRaw("Horizontal");
@@ -73,7 +125,10 @@ public class PlayerBehavior : MonoBehaviour
         {
             rigid.velocity = new Vector2(-maxSpeed, rigid.velocity.y);
         }
+    }
 
+    public void Jump()
+    {
         if((Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.UpArrow)) && (!isJump || isAir) /*&& (numJumpCount < maxJumpCount)*/)
         {
             Debug.Log("up!: " + Time.frameCount);
@@ -81,7 +136,7 @@ public class PlayerBehavior : MonoBehaviour
             {
                 isJump = true;
                 numJumpCount = 1;
-                StartCoroutine(Jump());
+                StartCoroutine(JumpCoroutine()); // 밑에 줄 내용이 들어가 있는 코루틴
                 // rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
             }
                 
@@ -89,57 +144,16 @@ public class PlayerBehavior : MonoBehaviour
             {
                 isJump = true;
                 numJumpCount = 2;
-                StartCoroutine(Jump());
+                StartCoroutine(JumpCoroutine());
                 // rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
             }
         }
+    }
+
+    public void AnimUpdate()
+    {
         anim.SetBool("isMove", isMove);
         //anim.SetBool("isJump", isJump);
         anim.SetBool("isAttack", isAttack);
-
-        // rigid.AddForce(Vector3.down * gravityForce);
-
-       
-        CheckisJump();
     }
-
-    public void CheckisJump()
-    // 레이케스트를 사용하여 점프 유무와 공중에 떠있는지 여부를 파악함
-    {
-        if(rigid.velocity.y != 0) // 그냥 떨어졌을 때의 경우도 포함하기 위한 조건문
-        {
-            isAir = true;
-        }
-
-        float rayPosX = 0.21f;
-        float rayPosY = 0.25f;
-
-        Debug.DrawRay(trans.position - new Vector3(rayPosX, rayPosY, 0), Vector3.down * (0.7f - rayPosY), new Color(0, 1, 0));
-        Debug.DrawRay(trans.position + new Vector3(rayPosX, -rayPosY, 0), Vector3.down * (0.7f - rayPosY), new Color(0, 1, 0));
-
-        if (rigid.velocity.y < 0)
-        {
-
-            RaycastHit2D[] rayHit = new RaycastHit2D[2];
-            rayHit[0] = Physics2D.Raycast(trans.position - new Vector3(rayPosX, rayPosY, 0), Vector2.down, 0.7f - rayPosY, LayerMask.GetMask("Platform"));
-            rayHit[1] = Physics2D.Raycast(trans.position + new Vector3(rayPosX, -rayPosY, 0), Vector2.down, 0.7f - rayPosY, LayerMask.GetMask("Platform"));
-
-            if((rayHit[0].collider != null && rayHit[0].distance < 0.35f - rayPosY) || (rayHit[1].collider != null && rayHit[1].distance < 0.35f - rayPosY))
-            {
-                isJump = false;
-                isAir = false;
-                numJumpCount = 0;
-            }
-
-        }
-
-    }
-
-    IEnumerator Jump()
-    {
-        yield return new WaitForFixedUpdate();
-
-        rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
-    }
-
 }
