@@ -97,19 +97,20 @@ public class PlayerBehavior : MonoBehaviour
             isAir = true;
         }
 
-        Vector3 rayPos = new Vector3(0.21f, 0, 0);
+        float rayPosX = 0.21f;
+        float rayPosY = 0.25f;
 
-        Debug.DrawRay(trans.position - rayPos, Vector3.down * 0.7f, new Color(0, 1, 0));
-        Debug.DrawRay(trans.position + rayPos, Vector3.down * 0.7f, new Color(0, 1, 0));
+        Debug.DrawRay(trans.position - new Vector3(rayPosX, rayPosY, 0), Vector3.down * (0.7f - rayPosY), new Color(0, 1, 0));
+        Debug.DrawRay(trans.position + new Vector3(rayPosX, -rayPosY, 0), Vector3.down * (0.7f - rayPosY), new Color(0, 1, 0));
 
         if (rigid.velocity.y < 0)
         {
 
             RaycastHit2D[] rayHit = new RaycastHit2D[2];
-            rayHit[0] = Physics2D.Raycast(trans.position - rayPos, Vector2.down, 0.7f, LayerMask.GetMask("Platform"));
-            rayHit[1] = Physics2D.Raycast(trans.position + rayPos, Vector2.down, 0.7f, LayerMask.GetMask("Platform"));
+            rayHit[0] = Physics2D.Raycast(trans.position - new Vector3(rayPosX, rayPosY, 0), Vector2.down, 0.7f - rayPosY, LayerMask.GetMask("Platform"));
+            rayHit[1] = Physics2D.Raycast(trans.position + new Vector3(rayPosX, -rayPosY, 0), Vector2.down, 0.7f - rayPosY, LayerMask.GetMask("Platform"));
 
-            if((rayHit[0].collider != null && rayHit[0].distance < 0.35f) || (rayHit[1].collider != null && rayHit[1].distance < 0.35f))
+            if((rayHit[0].collider != null && rayHit[0].distance < 0.35f - rayPosY) || (rayHit[1].collider != null && rayHit[1].distance < 0.35f - rayPosY))
             {
                 isJump = false;
                 isAir = false;
@@ -120,10 +121,10 @@ public class PlayerBehavior : MonoBehaviour
         if(isAir)
         {
             RaycastHit2D[] rayHit = new RaycastHit2D[2];
-            rayHit[0] = Physics2D.Raycast(trans.position - rayPos, Vector3.down, 0.7f, LayerMask.GetMask("Platform"));
-            rayHit[1] = Physics2D.Raycast(trans.position + rayPos, Vector3.down, 0.7f, LayerMask.GetMask("Platform"));
+            rayHit[0] = Physics2D.Raycast(trans.position - new Vector3(rayPosX, rayPosY, 0), Vector3.down, 0.7f - rayPosY, LayerMask.GetMask("Platform"));
+            rayHit[1] = Physics2D.Raycast(trans.position + new Vector3(rayPosX, -rayPosY, 0), Vector3.down, 0.7f - rayPosY, LayerMask.GetMask("Platform"));
 
-            if((rayHit[0].collider != null && rayHit[0].distance < 0.35f) || (rayHit[1].collider != null && rayHit[1].distance < 0.35f))
+            if((rayHit[0].collider != null && rayHit[0].distance < 0.35f - rayPosY) || (rayHit[1].collider != null && rayHit[1].distance < 0.35f - rayPosY))
             {
                 isAir = false;
             }
