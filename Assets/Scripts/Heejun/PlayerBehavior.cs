@@ -46,6 +46,13 @@ public class PlayerBehavior : MonoBehaviour
         Jump();
         AnimUpdate();
         CheckisJump();
+
+        if(Input.GetKeyDown(KeyCode.X) && !isAttack)
+        {
+            isAttack = true;
+            StartCoroutine(AttackCoroutine());
+        }
+
         // rigid.AddForce(Vector3.down * gravityForce); // 삭제 ㄱ?
     }
 
@@ -82,7 +89,8 @@ public class PlayerBehavior : MonoBehaviour
 
     IEnumerator AttackCoroutine()
     {
-        yield return new WaitForFixedUpdate();
+        yield return new WaitForSeconds(28f/60f);
+        isAttack = false;
     }
 
     IEnumerator JumpCoroutine() // 한 프레임에 입력이 동시에 두번이 들어가서 코루팅을 이용함.
